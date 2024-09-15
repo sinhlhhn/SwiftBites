@@ -74,8 +74,7 @@ struct IngredientForm: View {
     private func save() {
         switch mode {
         case .add:
-            let ingredient = Ingredient(name: name)
-            context.insert(ingredient)
+            context.insert(Ingredient(name: name))
         case .edit(let ingredient):
             ingredient.name = name
         }
