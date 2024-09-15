@@ -21,7 +21,6 @@ struct RecipeForm: View {
             _serving = .init(initialValue: 1)
             _time = .init(initialValue: 5)
             _instructions = .init(initialValue: "")
-            _ingredients = .init(initialValue: [])
         case .edit(let recipe):
             title = "Edit \(recipe.name)"
             _name = .init(initialValue: recipe.name)
@@ -29,7 +28,6 @@ struct RecipeForm: View {
             _serving = .init(initialValue: recipe.serving)
             _time = .init(initialValue: recipe.time)
             _instructions = .init(initialValue: recipe.instructions)
-            _ingredients = .init(initialValue: recipe.ingredients)
             _categoryId = .init(initialValue: recipe.category?.id)
             _imageData = .init(initialValue: recipe.imageData)
             
@@ -43,7 +41,7 @@ struct RecipeForm: View {
     @State private var time: Int
     @State private var instructions: String
     @State private var categoryId: UUID?
-    @State private var ingredients: [RecipeIngredient]
+    @Query private var ingredients: [RecipeIngredient]
     @State private var imageItem: PhotosPickerItem?
     @State private var imageData: Data?
     @State private var isIngredientsPickerPresented =  false
@@ -90,7 +88,7 @@ struct RecipeForm: View {
     private func ingredientPicker() -> some View {
         IngredientsView { selectedIngredient in
             let recipeIngredient = RecipeIngredient(ingredient: selectedIngredient, quantity: "")
-            ingredients.append(recipeIngredient)
+            context.insert(recipeIngredient)
         }
     }
     
@@ -265,7 +263,10 @@ struct RecipeForm: View {
     
     func deleteIngredients(offsets: IndexSet) {
         withAnimation {
-            ingredients.remove(atOffsets: offsets)
+            guard let ingredient = offsets.map({ ingredients[$0] }).first else {
+                return
+            }
+            context.delete(ingredient)
         }
     }
     
