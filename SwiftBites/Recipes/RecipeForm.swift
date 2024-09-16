@@ -21,6 +21,7 @@ struct RecipeForm: View {
             _serving = .init(initialValue: 1)
             _time = .init(initialValue: 5)
             _instructions = .init(initialValue: "")
+            _ingredients = .init(initialValue: [])
         case .edit(let recipe):
             title = "Edit \(recipe.name)"
             _name = .init(initialValue: recipe.name)
@@ -28,6 +29,7 @@ struct RecipeForm: View {
             _serving = .init(initialValue: recipe.serving)
             _time = .init(initialValue: recipe.time)
             _instructions = .init(initialValue: recipe.instructions)
+            _ingredients = .init(initialValue: recipe.ingredients)
             _categoryId = .init(initialValue: recipe.category?.id)
             _imageData = .init(initialValue: recipe.imageData)
             
@@ -41,7 +43,7 @@ struct RecipeForm: View {
     @State private var time: Int
     @State private var instructions: String
     @State private var categoryId: UUID?
-    @Query private var ingredients: [RecipeIngredient]
+    @State private var ingredients: [RecipeIngredient]
     @State private var imageItem: PhotosPickerItem?
     @State private var imageData: Data?
     @State private var isIngredientsPickerPresented =  false
@@ -89,6 +91,7 @@ struct RecipeForm: View {
         IngredientsView { selectedIngredient in
             let recipeIngredient = RecipeIngredient(ingredient: selectedIngredient, quantity: "")
             context.insert(recipeIngredient)
+            ingredients.append(recipeIngredient)
         }
     }
     
@@ -263,10 +266,7 @@ struct RecipeForm: View {
     
     func deleteIngredients(offsets: IndexSet) {
         withAnimation {
-            guard let ingredient = offsets.map({ ingredients[$0] }).first else {
-                return
-            }
-            context.delete(ingredient)
+            ingredients.remove(atOffsets: offsets)
         }
     }
     
@@ -275,18 +275,19 @@ struct RecipeForm: View {
         
         switch mode {
         case .add:
-            context.insert(
-                Recipe(
-                    name: name,
-                    summary: summary,
-                    category: category,
-                    serving: serving,
-                    time: time,
-                    ingredients: ingredients,
-                    instructions: instructions,
-                    imageData: imageData
-                )
+            let recipe = Recipe(
+                name: name,
+                summary: summary,
+                category: category,
+                serving: serving,
+                time: time,
+                instructions: instructions,
+                imageData: imageData
             )
+            recipe.ingredients = ingredients
+            
+            context.insert(recipe)
+            
         case .edit(let recipe):
             recipe.name = name
             recipe.name = name
