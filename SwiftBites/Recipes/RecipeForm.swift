@@ -261,6 +261,7 @@ struct RecipeForm: View {
             fatalError("Delete unavailable in add mode")
         }
         context.delete(recipe)
+        ingredients = []
         dismiss()
     }
     
