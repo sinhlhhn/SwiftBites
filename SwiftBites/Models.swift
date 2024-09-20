@@ -5,7 +5,7 @@ import SwiftData
 final class Ingredient {
     let id: UUID = UUID()
     var name: String = ""
-    @Relationship(deleteRule: .cascade, inverse: \RecipeIngredient.ingredient)
+    @Relationship(deleteRule: .cascade)
     var recipeIngredient: RecipeIngredient?
 
     init(name: String = "") {
@@ -21,7 +21,6 @@ final class Category {
 
     init(name: String) {
       self.name = name
-      self.recipes = recipes
     }
 }
 
@@ -61,6 +60,7 @@ final class Recipe {
 final class RecipeIngredient {
     let id: UUID = UUID()
     var ingredient: Ingredient?
+    var recipe: Recipe?
     var quantity: String
 
     init(quantity: String) {
