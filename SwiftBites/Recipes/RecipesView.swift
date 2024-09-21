@@ -8,6 +8,23 @@ struct RecipesView: View {
     @Query
     private var recipes: [Recipe]
     
+    var filterRecipes: [Recipe] {
+        let predicate = #Predicate<Recipe> { category in
+            return category.name.localizedStandardContains(query)
+        }
+        
+        let descriptor = FetchDescriptor<Recipe>(
+            predicate: query.isEmpty ? nil : predicate
+        )
+        
+        do {
+            let filterRecipes = try context.fetch(descriptor)
+            return filterRecipes
+        } catch {
+            return []
+        }
+    }
+    
     // MARK: - Body
     
     var body: some View {
@@ -62,13 +79,7 @@ struct RecipesView: View {
         if recipes.isEmpty {
             empty
         } else {
-            list(for: recipes.filter {
-                if query.isEmpty {
-                    return true
-                } else {
-                    return $0.name.localizedStandardContains(query) || $0.summary.localizedStandardContains(query)
-                }
-            }.sorted(using: sortOrder))
+            list(for: filterRecipes.sorted(using: sortOrder))
         }
     }
     
