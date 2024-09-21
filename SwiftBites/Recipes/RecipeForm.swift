@@ -48,7 +48,9 @@ struct RecipeForm: View {
     @State private var imageData: Data?
     @State private var isIngredientsPickerPresented =  false
     @State private var error: Error?
+    
     @Query private var categories: [Category]
+    
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) var context
     
@@ -280,26 +282,29 @@ struct RecipeForm: View {
             let recipe = Recipe(
                 name: name,
                 summary: summary,
-                category: category,
                 serving: serving,
                 time: time,
                 instructions: instructions,
                 imageData: imageData
             )
-            recipe.ingredients = ingredients
             
             context.insert(recipe)
             
+            recipe.ingredients = ingredients
+            recipe.category = category
+            
         case .edit(let recipe):
-            recipe.name = name
+            
             recipe.name = name
             recipe.summary = summary
-            recipe.category = category
             recipe.serving = serving
             recipe.time = time
             recipe.ingredients = ingredients
             recipe.instructions = instructions
             recipe.imageData = imageData
+            
+            recipe.category = category
+            category?.recipes.append(recipe)
         }
         dismiss()
     }

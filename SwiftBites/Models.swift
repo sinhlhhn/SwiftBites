@@ -2,10 +2,10 @@ import Foundation
 import SwiftData
 
 @Model
-final class Ingredient {
+final class Ingredient: Identifiable, Hashable {
     let id: UUID = UUID()
     var name: String = ""
-    @Relationship(deleteRule: .cascade)
+    @Relationship(deleteRule: .cascade, inverse: \RecipeIngredient.ingredient)
     var recipeIngredient: RecipeIngredient?
 
     init(name: String = "") {
@@ -14,9 +14,10 @@ final class Ingredient {
 }
 
 @Model
-final class Category {
+final class Category: Identifiable, Hashable {
     let id: UUID = UUID()
     var name: String
+    @Relationship(inverse: \Recipe.category)
     var recipes: [Recipe] = []
 
     init(name: String) {
@@ -25,14 +26,14 @@ final class Category {
 }
 
 @Model
-final class Recipe {
+final class Recipe: Identifiable, Hashable {
     let id: UUID = UUID()
     var name: String
     var summary: String
     var category: Category?
     var serving: Int
     var time: Int
-    @Relationship(deleteRule: .cascade)
+    @Relationship(deleteRule: .cascade, inverse: \RecipeIngredient.recipe)
     var ingredients: [RecipeIngredient] = []
     var instructions: String
     var imageData: Data?
@@ -57,7 +58,7 @@ final class Recipe {
 }
 
 @Model
-final class RecipeIngredient {
+final class RecipeIngredient: Identifiable, Hashable {
     let id: UUID = UUID()
     var ingredient: Ingredient?
     var recipe: Recipe?

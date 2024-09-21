@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RecipeCell: View {
-  let recipe: Recipe
+  @Bindable var recipe: Recipe
 
   // MARK: - Body
 

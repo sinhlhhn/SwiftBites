@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CategorySection: View {
-  let category: Category
+  @Bindable var category: Category
 
   // MARK: - Body
 
